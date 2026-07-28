@@ -1,4 +1,4 @@
-# [Project Name]
+# Game App
 
 [One or two sentences describing what the app does and who it's for.]
 
@@ -111,7 +111,7 @@ The app runs at `http://localhost:5173` (Vite's default).
 
 | Name | Focused on |
 | --- | --- |
-| [Name] | [e.g. frontend pages] |
+| Yomara Martinez | [e.g. frontend pages] |
 | [Name] | [e.g. backend routes] |
 | [Name] | [e.g. database + deployment] |
 
