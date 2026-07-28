@@ -1,133 +1,136 @@
-This guide applies to all three capstones. Read it before you write a single line of code.
+# [Project Name]
 
----
+[One or two sentences describing what the app does and who it's for.]
 
-## Your TA
+> *Example: **QuickPoll** — a web app where anyone can create a poll with multiple options, vote, and watch the results update. Built as a team to practice the full PERN stack end to end.*
 
-Each group will be assigned a TA as your primary point of contact. They'll check in with you daily after lunch. It helps to keep them in the loop — what's going well, what's stuck, what decisions you're wrestling with. You can reach out to anyone on the instructional team, but your assigned TA is usually a good place to start.
+## Live Demo
 
-Your TA acts as your **project manager (PM)** — a coach who runs your standup and helps you get unblocked, not a teammate who writes your code. Two short companion docs go deeper, and you should read both before you start:
+| Environment | URL |
+| --- | --- |
+| Frontend (Vercel) | [https://...] |
+| Backend API (Render) | [https://...] |
 
-- **[Getting Help & Escalation](./getting-help.md)** — who to ask, in what order, and how to ask so you actually get unblocked.
-- **[Using AI Responsibly](./ai-policy.md)** — how AI tools fit into a project you have to understand and defend.
+*Both links must load. This is how we confirm the app is deployed.*
 
----
+## Tech Stack
 
-## Before You Write Code
+| Layer | Technology |
+| --- | --- |
+| Frontend | React (Vite), React Router, CSS |
+| Backend | Node.js, Express |
+| Database | PostgreSQL, Sequelize (ORM) |
+| Auth | Auth0 *(remove if you didn't add login)* |
+| Hosting | Vercel (frontend), Render (backend), Neon (database) |
 
-Teams that spend a little time planning before coding tend to move faster and hit fewer roadblocks. Here's what we recommend doing on Day 1:
+*List only what you actually used. If you added a library (e.g. a chart library), add it here.*
 
-1. **GitHub Project Board** — a few issues to get you started goes a long way for staying organized
-2. **Database schema diagram** — sketching your tables in [dbdiagram.io](https://dbdiagram.io) before writing models saves a lot of painful migrations later
-3. **UI wireframe** — even one rough screen in [Figma](https://www.figma.com) helps the team agree on what you're actually building
-4. **Team Norms document** — a quick conversation using [this template](https://docs.google.com/document/d/1kKkbEWmXAA6VJK5ZPmkyeqgySchUwpPvuWMVLuiYeSs/edit?usp=sharing) about PRs, disagreements, and working hours prevents a lot of friction later
+## Features
 
----
+- [ ] View all polls on a home page
+- [ ] Create a poll with a title, description, and 2+ options
+- [ ] Vote on a poll
+- [ ] See results — vote count per option, most votes first
+- [ ] [Any stretch feature you shipped, e.g. one vote per browser]
 
-## Getting Started (Once You Have the Repos)
+## Architecture
 
-1. Make sure everyone is a member of the org and can push to **both** repos
-2. Make sure everyone can run the project locally — if anyone can't, that's everyone's top priority
-3. Deploy early, and deploy each part **once**. Decide as a team **who owns each piece** — frontend to **Vercel**, backend to **Render**, database to **Neon** — following the [Week 7 Deployment guide](../assignments/Deployment.md). Each service is set up by *one* owner who then shares its URL (or connection string) with the team; you do **not** each deploy your own copy. Deploying a small app is far easier than a big one, so get the whole pipeline working before you pile on features
+[One sentence on how the pieces talk to each other.]
 
----
+```
+React (Vercel)  ──fetch──▶  Express API (Render)  ──Sequelize──▶  PostgreSQL (Neon)
+```
 
-## Daily Standup
+*Example: The React frontend calls the Express API over HTTP. Express uses Sequelize to read and write to a PostgreSQL database hosted on Neon.*
 
-Every day, your team meets for a quick **standup** — about 10 minutes, run by your TA. It isn't a status report for management; it's how four people building one thing stay pointed in the same direction.
+## Database Schema
 
-Each person answers three questions:
+[Paste a screenshot of your dbdiagram.io ERD, or link to it.]
 
-- **What did I do yesterday?**
-- **What do I intend to do today?**
-- **What's blocking me?**
+| Table | Key columns | Relationships |
+| --- | --- | --- |
+| Polls | title, description | has many Options |
+| Options | text, pollId (FK) | belongs to Poll, has many Votes |
+| Votes | optionId (FK) | belongs to Option |
 
-Keep blockers **specific**. "I'm stuck on the backend" isn't something anyone can act on. "My `POST /polls` returns a 500 and the error says `column pollId does not exist`" is. Name the code, the error message, or the teammate's PR you're waiting on.
+## API Reference
 
-Standup is also where you say out loud what you're building — which happens to be the best proof that you actually understand it (see [Using AI Responsibly](./ai-policy.md)).
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/polls` | Return all polls |
+| POST | `/polls` | Create a poll with its options |
+| GET | `/polls/:id` | Return one poll with options and vote counts |
+| POST | `/polls/:id/vote` | Submit a vote for an option |
 
----
+*Add any extra routes you built (e.g. `DELETE /polls/:id`).*
 
-## The GitHub Workflow
+## Getting Started (Run It Locally)
 
-Collaboration is the whole point of this week, and Git is where collaboration actually happens. You last used the collaborative flow in Week 2 — here it is again, tuned for four people sharing **one** repo.
+### Prerequisites
+- Node.js (v18+) and npm installed
+- A PostgreSQL database URL (we use [Neon](https://neon.tech))
 
-**The golden rule: `main` always works.** Nobody commits directly to `main`, and nobody pushes broken code to it. Every change arrives through a Pull Request that a teammate has looked at. This one habit prevents most of the pain teams hit this week.
+### 1. Clone both repos
+```bash
+git clone [frontend-repo-url]
+git clone [backend-repo-url]
+```
 
-### One organization, two repos — set up once
+### 2. Start the backend
+```bash
+cd [backend-folder]
+npm install
+# create a .env file (see below)
+npm run dev
+```
 
-> ▶ **Watch:** [Setting up your team's GitHub organization and repo](https://youtu.be/eSkNVGciXXo) — a full walkthrough of the org and repo setup (video only, no slides).
+Backend `.env`:
+```
+DATABASE_URL=postgresql://user:password@host/dbname
+PORT=3000
+```
 
-**This is a one-time setup done by *one* teammate — not all four.** If everyone runs these steps, you'll end up with four organizations and a pile of duplicate repos. Pick one person to screen-share and do it while the others watch; everyone joins at the end.
+### 3. Start the frontend
+```bash
+cd [frontend-folder]
+npm install
+# create a .env file (see below)
+npm run dev
+```
 
-- [ ] **One** teammate creates a single GitHub **organization** for the team
-- [ ] Invite the other three into the organization
-- [ ] Inside the org, create **two** repos: one **frontend** (React) and one **backend** (Express). Your database lives on Neon and has no repo
-- [ ] Everyone **clones both** repos — clone the *same* repos, don't fork (a fork is your own separate copy, which is not what you want here)
+Frontend `.env`:
+```
+VITE_API_URL=http://localhost:3000
+```
 
-### Branch for every piece of work
+The app runs at `http://localhost:5173` (Vite's default).
 
-A **branch** is a separate, safe copy of the code where you build one thing without disturbing anyone else.
+*If you added Auth0, list its env vars here too (e.g. `VITE_AUTH0_DOMAIN`, `VITE_AUTH0_CLIENT_ID`, `AUTH0_AUDIENCE`).*
 
-- [ ] Start from an up-to-date `main`: `git checkout main` then `git pull`
-- [ ] Make a branch named for the work: `git checkout -b create-poll-form`
-- [ ] Commit small and often as you go
-- [ ] Push your branch: `git push -u origin create-poll-form`
+## Team & Roles
 
-### Open a Pull Request to merge in
+| Name | Focused on |
+| --- | --- |
+| [Name] | [e.g. frontend pages] |
+| [Name] | [e.g. backend routes] |
+| [Name] | [e.g. database + deployment] |
 
-A **Pull Request (PR)** asks to merge your branch into `main`, and gives a teammate a place to review it first.
+*Roles overlapping is normal — just say who focused where.*
 
-- [ ] Open a PR from your branch into `main` on GitHub
-- [ ] Write a one-line description: what it does and how to test it
-- [ ] Link the issue it finishes (type `Closes #4` in the description)
-- [ ] Tag a teammate to review
+## Design Decisions
 
-### Review before you merge
+Write 2–3 short "we did X because Y" lines. Plain English.
 
-- [ ] The reviewer pulls the branch and confirms it runs
-- [ ] The reviewer approves, or leaves comments
-- [ ] The author pushes fixes for any comments
-- [ ] Merge the PR, then delete the branch
+- [Example: We count votes by loading each option with its votes and using `.length`, because it was the simplest thing that worked.]
+- [Example: We used React Router so moving between pages doesn't reload the browser.]
+- [Your decision here.]
 
-### Keep PRs small, and sync often
+Design file (Figma / wireframe / sketch): [link or screenshot — a photo of a paper sketch is fine]
 
-- **Small PRs get reviewed; giant ones get rubber-stamped.** A PR touching 3 files is a 5-minute review. One touching 30 files is impossible to review and guarantees conflicts. Merge several small PRs a day rather than one giant one on Friday.
-- **A merge conflict is normal, not a disaster.** It just means two people changed the same lines. Pull `main` into your branch often so conflicts stay small — and the *first* time you hit one, do it with your TA rather than alone.
-- **Every PR traces back to your project board.** If work isn't an issue on the board, the team can't see it's happening.
+## Challenges & What We Learned
 
----
+Answer in a sentence or two each. Honesty helps you more than polish.
 
-## How to Divide the Work
-
-There's no single right answer. Two approaches work well — talk it through as a team and commit to one before you start.
-
-### Vertical Slices
-Each person owns one feature end-to-end: the React components, the Express routes, and the database models for that feature.
-
-**Example:** One person builds everything for "Create Poll" — the form, the POST route, and the Sequelize model. Another builds everything for "View Results."
-
-- **Pro:** Ship independently. Touch the full stack. Easier to demo progress daily.
-- **Con:** Harder to coordinate shared utilities, layouts, and components across features.
-
-### Horizontal Layers
-Each person owns one layer of the stack across all features.
-
-**Example:** One person owns all React components. Another owns all Express routes. Another owns the database schema and Sequelize models.
-
-- **Pro:** Clear ownership. Easier to stay in your lane early on.
-- **Con:** Tight coordination required. Risk that some teammates don't touch the full stack.
-
-**Regardless of which approach you choose:** make sure everyone writes code at every layer of the stack before the project ends. Don't let anyone stay exclusively on the frontend or backend the entire time.
-
----
-
-## A Few Final Notes
-
-**Don't get stuck in your comfort zone.** If you're most comfortable with React, that's exactly why you should also be writing Express routes this week.
-
-**Research is real work.** Reading documentation, watching a tutorial on a new library, figuring out why your query is returning the wrong data — this deserves time and recognition. Account for it in your project board.
-
-**Communication is a technical skill.** When something isn't working on the team — a PR that's blocking progress, a decision nobody agrees on, a teammate who's going quiet — bring it up constructively and early. The best engineers aren't just good at code. They're good at working with people.
-
-**Collaboration is the primary learning objective.** The app is the vehicle. How you build it together is the lesson.
+- **Hardest bug or blocker:** [what was it, and how did you get past it?]
+- **What we'd do differently:** [one thing]
+- **One thing we learned about working as a team:** [one thing]
