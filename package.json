@@ -1,0 +1,34 @@
+{
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "json": "^11.0.0",
+    "morgan": "^1.11.0",
+    "pg": "^8.22.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.8"
+  },
+  "name": "games-app-backend",
+  "version": "1.0.0",
+  "description": "[One or two sentences describing what the app does and who it's for.]",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yomara-martinez/games-app-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Yomara-martinez/games-app-backend/issues"
+  },
+  "homepage": "https://github.com/Yomara-martinez/games-app-backend#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
