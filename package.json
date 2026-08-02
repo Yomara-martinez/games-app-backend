@@ -27,7 +27,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Yomara-martinez/games-app-backend.git"
+    "url": "git+https://github.com/Yomara-martinez/games-app-backend.git",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
