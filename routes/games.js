@@ -202,6 +202,26 @@ router.delete("/:id/delete",requireAuth, async (req, res, next) => {
   }
 });
 
+router.delete("/:id/wishlist/delete",requireAuth, async (req, res, next) => {
+  try {
+      const wishlist = await WishList.findOne({
+      where: {
+        userId: req.user.id,
+        gameReviewId: req.params.id,
+      },
+    });
+
+    if (!wishlist) {
+      return res.sendStatus(404);
+    }
+
+    await wishlist.destroy();
+    res.sendStatus(204);
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 
 router.use((err, req, res, nex) => {
