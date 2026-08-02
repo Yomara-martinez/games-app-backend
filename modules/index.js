@@ -43,11 +43,11 @@ Likes.belongsTo(User, {
 })
 
 GameReview.hasMany(Likes,{
-     foreignKey: "userId"
+     foreignKey: "gameReviewId"
 })
 
 Likes.belongsTo(GameReview,{
-     foreignKey: "userId"
+     foreignKey: "gameReviewId"
 })
 
 
@@ -59,11 +59,11 @@ Dislikes.belongsTo(User, {
 })
 
 GameReview.hasMany(Dislikes,{
-     foreignKey: "userId"
+     foreignKey: "gameReviewId"
 })
 
 Dislikes.belongsTo(GameReview,{
-     foreignKey: "userId"
+     foreignKey: "gameReviewId"
 })
 module.exports = {
   dbConnection, // exported too so seed.js can sync from one place
