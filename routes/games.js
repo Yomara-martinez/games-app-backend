@@ -133,7 +133,16 @@ router.post("/wishlist", requireAuth, async(req,res, next)=>{
 
 router.post("/:id/dislike", requireAuth, async(req,res, next)=>{
     try {
+const alreadyDisLiked = await Dislikes.findOne({
+      where: {
+        userId: req.user.id,
+        gameReviewId: req.params.id,
+      },
+    });
 
+    if (alreadyDisLiked) {
+      return res.status(400).json({ message: "You already disliked this review." });
+    }
     const newDislike = await Dislikes.create({
       userId: req.user.id,
       gameReviewId: req.params.id
