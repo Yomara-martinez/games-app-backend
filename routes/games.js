@@ -154,7 +154,16 @@ const disliked = await Dislikes.findOne({
 } )
 router.post("/:id/like", requireAuth, async(req,res, next)=>{
     try {
+  const alreadyLiked = await Likes.findOne({
+      where: {
+        userId: req.user.id,
+        gameReviewId: req.params.id,
+      },
+    });
 
+    if (alreadyLiked) {
+      return res.status(400).json({ message: "You already liked this review." });
+    }
     const NewLike = await Likes.create({
       userId: req.user.id,
       gameReviewId: req.params.id
