@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const GameReview = require("../modules/Games");
+const GameReview = require("../modules/GameReview");
+const { requireAuth } = require("../middleware/auth");
+const { User, WishList } = require("../modules/index");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -8,66 +10,131 @@ router.get("/", async (req, res, next) => {
 
     return res.json(allReviews);
   } catch (err) {
-    next();
+    next(err);
   }
 });
-
-router.get("/id", async (req, res, next) => {
+router.get("/wishlist", requireAuth, async (req, res, next)=>{
   try {
-    const review = await GameReview.findByPk(req.params.id);
+    const wishlist = await WishList.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      include: GameReview,
+    });
+
+    res.json(wishlist);
+  } catch (err) {
+    next(err);
+  }
+})
+
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    const review = await GameReview.findByPk(req.params.id, {
+      include: [
+        {
+          model: User,
+          attributes: ["username"]
+        },
+        {
+          model: WishList
+        }
+      ]
+    });
     if (!review) {
       return res.sendStatus(404);
     }
     res.json(review);
   } catch (err) {
-    next();
+    next(err);
   }
 });
 
-router.post("/create", async (req, res, next) => {
+router.post("/create", requireAuth, async (req, res, next) => {
   try {
     const { title, description, duration, rating, genre } = req.body;
+
     const createReview = await GameReview.create({
       title,
       description,
       duration,
       rating,
       genre,
+      userId: req.user.id
     });
+
     return res.status(201).json(createReview)
   } catch (err) {
-    next();
+    next(err);
   }
 });
-router.patch("/id", async (req, res, next) => {
+
+router.patch("/:id/edit", requireAuth, async (req, res, next) => {
   try {
-    const fixReview= await GameReview.findByPk(req.params.id)
-    if(!fixReview){
-        return res.sendStatus(404)
+    const fixReview = await GameReview.findByPk(req.params.id);
+
+    if (!fixReview) {
+      return res.sendStatus(404);
     }
-    await fixReview.update(req.body)
-    res.status(200).json(fixReview)
+
+    if (fixReview.userId !== req.user.id) {
+      return res.sendStatus(403);
+    }
+
+    await fixReview.update(req.body);
+    res.status(200).json(fixReview);
+
   } catch (err) {
-    next();
+    next(err);
   }
 });
 
-router.delete("/id", async (req, res, next) => {
+router.post("/wishlist", requireAuth, async(req,res, next)=>{
+    try {
+
+    const { gameReviewId } = req.body;
+
+
+    const wishlist = await WishList.create({
+      userId: req.user.id,
+      gameReviewId
+    });
+
+
+    res.status(201).json(wishlist);
+
+
+  } catch (err) {
+
+    next(err);
+
+  }
+} )
+
+router.delete("/:id/delete",requireAuth, async (req, res, next) => {
   try {
-    const deleteReview= await GameReview.findByPk(req.params.id)
+    const deleteReview = await GameReview.findByPk(req.params.id);
 
-    if(!deleteReview){
-        return res.sendStatus(404)
-    }deleteReview.destroy()
-    res.sendStatus(204)
+    if (!deleteReview) {
+      return res.sendStatus(404);
+    }
+
+    if (deleteReview.userId !== req.user.id) {
+      return res.sendStatus(403);
+    }
+
+    await deleteReview.destroy();
+    res.sendStatus(204);
+
   } catch (err) {
-    next();
+    next(err);
   }
 });
 
-router.use((err,req,res, nex)=>{
-    console.error(err)
-    res.sendStatus(500)
-})
+router.use((err, req, res, nex) => {
+  console.error(err);
+  res.sendStatus(500);
+});
 
-module.exports=router
+module.exports = router;
