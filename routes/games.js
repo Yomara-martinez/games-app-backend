@@ -130,6 +130,28 @@ router.post("/wishlist", requireAuth, async(req,res, next)=>{
 
   }
 } )
+
+router.post("/:id/dislike", requireAuth, async(req,res, next)=>{
+    try {
+
+    const newDislike = await Dislikes.create({
+      userId: req.user.id,
+      gameReviewId: req.params.id
+    });
+
+const disliked = await Dislikes.findOne({
+      where: { gameReviewId: req.params.id },
+    });
+
+    res.status(201).json(disliked);
+
+
+  } catch (err) {
+
+    next(err);
+
+  }
+} )
 router.post("/:id/like", requireAuth, async(req,res, next)=>{
     try {
 
