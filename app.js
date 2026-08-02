@@ -8,7 +8,8 @@ const { rateLimit } = require('express-rate-limit');
 const path = require('path');
 
 const dbConnection = require("./db")
-const { GameReview, User,  WishList } = require("./modules/index");
+const { GameReview, User,  WishList , Likes,
+  Dislikes} = require("./modules/index");
 const PORT = process.env.PORT || 8080;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5175';
 const app = express();

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const GameReview = require("../modules/GameReview");
 const { requireAuth } = require("../middleware/auth");
-const { User, WishList } = require("../modules/index");
+const { User, WishList, Likes , Dislikes} = require("../modules/index");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -27,7 +27,20 @@ router.get("/wishlist", requireAuth, async (req, res, next)=>{
     next(err);
   }
 })
+// router.get("/:id/like", requireAuth, async (req, res, next)=>{
+//   try {
+//     const like= await WishList.findAll({
+//       where: {
+//         userId: req.user.id,
+//       },
+//       include: GameReview,
+//     });
 
+//     res.json(like);
+//   } catch (err) {
+//     next(err);
+//   }
+// })
 
 router.get("/:id", async (req, res, next) => {
   try {
@@ -39,6 +52,12 @@ router.get("/:id", async (req, res, next) => {
         },
         {
           model: WishList
+        },
+        {
+          model: Likes
+        },
+        {
+          model: Dislikes
         }
       ]
     });
@@ -111,6 +130,26 @@ router.post("/wishlist", requireAuth, async(req,res, next)=>{
 
   }
 } )
+router.post("/:id/like", requireAuth, async(req,res, next)=>{
+    try {
+
+    const NewLike = await Likes.create({
+      userId: req.user.id,
+      gameReviewId: req.params.id
+    });
+const liked = await Likes.findOne({
+      where: { gameReviewId: req.params.id },
+    });
+
+    res.status(201).json(liked);
+
+
+  } catch (err) {
+
+    next(err);
+
+  }
+} )
 
 router.delete("/:id/delete",requireAuth, async (req, res, next) => {
   try {
@@ -131,6 +170,8 @@ router.delete("/:id/delete",requireAuth, async (req, res, next) => {
     next(err);
   }
 });
+
+
 
 router.use((err, req, res, nex) => {
   console.error(err);

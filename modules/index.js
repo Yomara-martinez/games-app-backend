@@ -6,6 +6,9 @@ const dbConnection = require('../db');
 const GameReview= require('./GameReview');
 const User = require('./Users');
 const WishList = require("./WishList")
+const Dislikes = require("./Dislikes")
+const Likes = require("./likes")
+
 
 User.hasMany(GameReview,{
 foreignKey: "userId"
@@ -14,11 +17,7 @@ foreignKey: "userId"
 GameReview.belongsTo(User,{
 foreignKey: "userId"
 })
-// ---------- associations ----------
-// Describe how tables relate here. When you're ready to tie tasks to their
-// owner, uncomment these (it adds a userId column to tasks):
-//   User.hasMany(Task)     // one user has many tasks
-//   Task.belongsTo(User)   // each task belongs to one user (adds a userId column)
+
 
 User.hasMany(WishList, {
     foreignKey: "userId"
@@ -35,10 +34,43 @@ GameReview.hasMany(WishList,{
 WishList.belongsTo(GameReview,{
  foreignKey: "gameReviewId"
 })
+
+User.hasMany(Likes,{
+     foreignKey: "userId"
+})
+Likes.belongsTo(User, {
+     foreignKey: "userId"
+})
+
+GameReview.hasMany(Likes,{
+     foreignKey: "userId"
+})
+
+Likes.belongsTo(GameReview,{
+     foreignKey: "userId"
+})
+
+
+User.hasMany(Dislikes,{
+     foreignKey: "userId"
+})
+Dislikes.belongsTo(User, {
+     foreignKey: "userId"
+})
+
+GameReview.hasMany(Dislikes,{
+     foreignKey: "userId"
+})
+
+Dislikes.belongsTo(GameReview,{
+     foreignKey: "userId"
+})
 module.exports = {
   dbConnection, // exported too so seed.js can sync from one place
   GameReview,
   User,
   WishList,
-  Sequelize
+  Sequelize,
+  Likes,
+  Dislikes
 };
