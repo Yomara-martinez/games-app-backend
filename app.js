@@ -11,7 +11,7 @@ const dbConnection = require("./db")
 const { GameReview, User,  WishList , Likes,
   Dislikes} = require("./modules/index");
 const PORT = process.env.PORT || 8080;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5175';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://games-app-frontend-teal.vercel.app/';
 const app = express();
 
 const router = require("./routes/games");

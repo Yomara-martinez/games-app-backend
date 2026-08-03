@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const { dbConnection, User, GameReview, WishList } = require("./modules");
+const { dbConnection, User, GameReview, WishList , Likes, Dislikes} = require("./modules");
 
 
 // ---------------- GAME DATABASE ----------------
@@ -245,69 +245,93 @@ async function seed() {
 
 
 
-    // ---------------- WISHLIST ----------------
 
 
-    console.log("Creating wishlists...");
+// ---------------- LIKES ----------------
+
+console.log("Creating likes...");
+
+const likes = [];
+const usedLikes = new Set();
+
+for (const review of createdReviews) {
+
+  const usersForReview = [...createdUsers]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, Math.floor(Math.random() * 31) + 20);
+    // 20-50 random users
+
+  usersForReview.forEach(user => {
+
+    const key = `${user.id}-${review.id}`;
+
+    usedLikes.add(key);
+
+    likes.push({
+      userId: user.id,
+      gameReviewId: review.id
+    });
+
+  });
+
+}
+
+await Likes.bulkCreate(likes);
+
+console.log(`${likes.length} likes created`);
 
 
-    const wishlist = [];
 
-    const usedWishlist = new Set();
+// ---------------- DISLIKES ----------------
 
+console.log("Creating dislikes...");
 
+const dislikes = [];
+const usedDislikes = new Set();
 
-    while (wishlist.length < 800) {
+for (const review of createdReviews) {
 
-
-      const user =
-        createdUsers[
-          Math.floor(Math.random() * createdUsers.length)
-        ];
-
-
-      const review =
-        createdReviews[
-          Math.floor(Math.random() * createdReviews.length)
-        ];
+  const alreadyReacted = new Set(
+    likes
+      .filter(like => like.gameReviewId === review.id)
+      .map(like => like.userId)
+  );
 
 
-
-      const key =
-        `${user.id}-${review.id}`;
-
-
-
-      // Prevent duplicate wishlist items
-
-      if (!usedWishlist.has(key)) {
+  const availableUsers = createdUsers
+    .filter(user => !alreadyReacted.has(user.id))
+    .sort(() => Math.random() - 0.5);
 
 
-        usedWishlist.add(key);
+  const amount = Math.floor(Math.random() * 6) + 5;
+  // 5-10 dislikes
 
 
-        wishlist.push({
+  availableUsers
+    .slice(0, amount)
+    .forEach(user => {
 
+      const key = `${user.id}-${review.id}`;
+
+      if (!usedDislikes.has(key)) {
+
+        usedDislikes.add(key);
+
+        dislikes.push({
           userId: user.id,
-
           gameReviewId: review.id
-
         });
-
 
       }
 
-    }
+    });
+
+}
 
 
+await Dislikes.bulkCreate(dislikes);
 
-    await WishList.bulkCreate(wishlist);
-
-
-
-    console.log(`${wishlist.length} wishlist items created`);
-
-
+console.log(`${dislikes.length} dislikes created`);
 
     console.log("✅ Database seeded successfully!");
 

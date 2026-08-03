@@ -41,6 +41,45 @@ router.get("/wishlist", requireAuth, async (req, res, next)=>{
 //     next(err);
 //   }
 // })
+router.post("/create", requireAuth, async (req, res, next) => {
+  try {
+    const { title, description, duration, rating, genre } = req.body;
+
+    const createReview = await GameReview.create({
+      title,
+      description,
+      duration,
+      rating,
+      genre,
+      userId: req.user.id
+    });
+
+    return res.status(201).json(createReview)
+  } catch (err) {
+    next(err);
+  }
+});
+router.post("/wishlist", requireAuth, async(req,res, next)=>{
+    try {
+
+    const { gameReviewId } = req.body;
+
+
+    const wishlist = await WishList.create({
+      userId: req.user.id,
+      gameReviewId
+    });
+
+
+    res.status(201).json(wishlist);
+
+
+  } catch (err) {
+
+    next(err);
+
+  }
+} )
 
 router.get("/:id", async (req, res, next) => {
   try {
@@ -70,24 +109,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.post("/create", requireAuth, async (req, res, next) => {
-  try {
-    const { title, description, duration, rating, genre } = req.body;
 
-    const createReview = await GameReview.create({
-      title,
-      description,
-      duration,
-      rating,
-      genre,
-      userId: req.user.id
-    });
-
-    return res.status(201).json(createReview)
-  } catch (err) {
-    next(err);
-  }
-});
 
 router.patch("/:id/edit", requireAuth, async (req, res, next) => {
   try {
@@ -109,27 +131,7 @@ router.patch("/:id/edit", requireAuth, async (req, res, next) => {
   }
 });
 
-router.post("/wishlist", requireAuth, async(req,res, next)=>{
-    try {
 
-    const { gameReviewId } = req.body;
-
-
-    const wishlist = await WishList.create({
-      userId: req.user.id,
-      gameReviewId
-    });
-
-
-    res.status(201).json(wishlist);
-
-
-  } catch (err) {
-
-    next(err);
-
-  }
-} )
 
 router.post("/:id/dislike", requireAuth, async(req,res, next)=>{
     try {
